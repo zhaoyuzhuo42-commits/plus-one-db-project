@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
-from db.connection import 
+from db.connection import get_connection
 
 
-app = APIRouter(prefix="/api", tags=["events"])
+router = APIRouter(prefix="/api", tags=["events"])
 @router.get("/events")
 def get_all_events():
     conn = get_connection()
