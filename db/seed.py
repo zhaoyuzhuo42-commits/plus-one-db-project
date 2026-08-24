@@ -26,7 +26,8 @@ def seed():
             CREATE TABLE venues (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
-                address VARCHAR(255)
+                address VARCHAR(255),
+                capacity INT NOT NULL
             );
         """)
 
@@ -35,16 +36,19 @@ def seed():
                 id SERIAL PRIMARY KEY,
                 title VARCHAR(255) NOT NULL,
                 description TEXT,
-                event_date TIMESTAMP WITH TIME ZONE NOT NULL,
+                starts_at TIMESTAMPTZ NOT NULL,
+                ends_at TIMESTAMPZ NOT NULL,
                 organiser_id INTEGER REFERENCES users(id),
                 venue_id INTEGER REFERENCES venues(id)
+                creat_at TIMESTAMPZ WITH TIME ZONE DEFAULT NOW()
             );
         """)
         cur.execute("""
             CREATE TABLE rsvps (
+                id SEREAL PRIMARY KEY,
                 user_id INTEGER REFERENCES users(id),
                 event_id INTEGER REFERENCES events(id),
-                PRIMARY KEY (user_id, event_id)
+                creat_at TIMESTAMPZ WITH TIME ZONE DEFAULT NOW()
             );
         """)
 
@@ -58,19 +62,20 @@ def seed():
         with open('db/data/venues.json', 'r') as f:
             venues_data = json.load(f)
         for venue in venues_data:
-            cur.execute("INSERT INTO venues (name, address) VALUES (%s, %s)", 
-                        (venue['name'], venue['address']))
+            cur.execute("INSERT INTO venues (name, address, capacity) VALUES (%s, %s)", 
+                        (venue['name'], venue['address'], venue['capacity']))
             
         with open('db/data/events.json', 'r') as f:
             events_data = json.load(f)
         for event in events_data:
-            cur.execute("INSERT INTO events (title, description, event_date, organiser_id, venue_id) VALUES (%s, %s, %s, %s, %s)", 
-                        (event['title'], event['description'], event['starts_at'], event['organiser_id'], event['venue_id']))
+            cur.execute("INSERT INTO events (title, description, starts_st, ends_at, organiser_id, venue_id) VALUES (%s, %s, %s, %s, %s)", 
+                        (event['title'], event['description'], event['starts_at'], event['ends_at'], event['organiser_id'], event['venue_id']))
             
-        make_rsvps = [(1, 1), (2, 1), (1, 2)]
-        for rsvp in make_rsvps:
-            cur.execute("INSERT INTO rsvps (user_id, event_id) VALUES (%s, %s)", 
-                        (rsvp[0], rsvp[1]))
+        with open("db/data/rsvps.json", "r") as f:
+            rsvps_data = json.load(f)
+        for rsvp in rsvps_data:
+            cur.execute("INSERT INTO rsvp (attendee_id, event_id) VALUES (%s, %s)",
+                        (rsvp['attendee_id'], rsvp['event_id']))
             
     print("seed run")
     delete_table()
