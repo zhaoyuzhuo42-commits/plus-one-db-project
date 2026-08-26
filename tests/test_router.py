@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from db.router import app
+from db.router import get_all_events
 
 @pytest.fixture
 def client():
