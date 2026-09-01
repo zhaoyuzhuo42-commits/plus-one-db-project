@@ -17,7 +17,7 @@ def test_get_all_events_get_events(client):
     body = response.json()
     assert "events" in body
 
-def test_get_all_events_get_events(client):
+def test_get_all_events_get_all_events(client):
     response = client.get("/api/events")
     with open ("db/data/events.json") as f:
         seeded_events =  json.load(f)
