@@ -1,4 +1,5 @@
 import json
+import bcrypt
 from db.connection import get_connection
 
 def seed():
@@ -56,8 +57,9 @@ def seed():
         with open('db/data/users.json', 'r') as f:
             users_data = json.load(f)
         for user in users_data:
+            hashed_password = bcrypt.hashpw(user["password"].encode("utf-8"),bcrypt.gensalt()).decode("utf-8")
             cur.execute("INSERT INTO users (name, email, password) VALUES (%s, %s, %s)", 
-                        (user['name'], user['email'], user['password']))
+                        (user['name'], user['email'], hashed_password))
             
         with open('db/data/venues.json', 'r') as f:
             venues_data = json.load(f)
