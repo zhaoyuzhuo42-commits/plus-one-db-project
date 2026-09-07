@@ -79,3 +79,7 @@ def get_event_id(event_id):
                     "created_at": row[8]
                 }
     return {"event": events_data}
+
+@router.post("/auth/login")
+def login():
+    pass
