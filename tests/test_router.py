@@ -57,41 +57,41 @@ def test_get_event_id_not_intger_returns_400(client):
 #POST /api/auth/login
 
 def test_login_return_200_with_valid_credentials(client):
-    reponse = client.post("/api/suth/login",
+    response = client.post("/api/auth/login",
                           json={ 
                               "email": "alice@example.com",
                               "password": "password123"}
                               )
-    assert reponse.status_code == 200
-    result = reponse.json()
+    assert response.status_code == 200
+    result = response.json()
     assert "token" in result
 
 def test_login_email_not_found_return_401(client):
-    reponse = client.post("/api/suth/login",
+    response = client.post("/api/auth/login",
                               json={ 
                                   "email": "notfound@example.com",
                                   "password": "password123"}
                                   )
-    assert reponse.status_code == 401
+    assert response.status_code == 401
 
 def test_login_password_incorrect_return_401(client):
-    reponse = client.post("/api/suth/login",
+    response = client.post("/api/auth/login",
                               json={ 
                                   "email": "alice@example.com",
                                   "password": "passwordincorrect"}
                                   )
-    assert reponse.status_code == 401
+    assert response.status_code == 401
 
 def test_login_missing_email_return_400(client):
-    reponse = client.post("/api/suth/login",
+    response = client.post("/api/auth/login",
                               json={ 
                                   "password": "password123"}
                                   )
-    assert reponse.status_code == 400
+    assert response.status_code == 400
 
 def test_login_missing_password_return_400(client):
-    reponse = client.post("/api/suth/login",
+    response = client.post("/api/auth/login",
                           json={ 
                               "email": "alice@example.com"}
                               )
-    assert reponse.status_code == 400
+    assert response.status_code == 400

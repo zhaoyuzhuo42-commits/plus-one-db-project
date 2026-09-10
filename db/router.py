@@ -1,4 +1,7 @@
 from fastapi import APIRouter, HTTPException
+import bcrypt
+import jwt
+import os
 from db.connection import get_connection
 
 
@@ -81,5 +84,42 @@ def get_event_id(event_id):
     return {"event": events_data}
 
 @router.post("/auth/login")
-def login():
-    pass
+def login(credentials: dict):
+    email = credentials.get("email")
+    password = credentials.get("password")
+    if not email or not password:
+        raise HTTPException(
+            status_code = 400,
+            detail = "Email and Password are required."
+        )
+
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+            SELECT id, email, password
+            FROM users
+            WHERE email = %s""",
+            (email,))
+            user = cursor.fetchone()
+
+    if user is None:
+        raise HTTPException(
+            status_code= 401,
+            detail= "invalid credentials"
+        )
+
+    if not bcrypt.checkpw(
+    password.encode("utf-8"),
+    user[2].encode("utf-8")
+):
+        raise HTTPException(
+            status_code= 401,
+            detail= "invalid credentials"
+        )
+    token = jwt.encode(
+    {"sub": str(user[0])},
+    os.getenv("JWT_SECRET"),
+    algorithm="HS256"
+)
+
+    return {"token": token}
